@@ -3,6 +3,7 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 from utils.data_loader import load_main_indices_stock_data
+import time
 
 
 def register_callbacks(app):
@@ -10,13 +11,27 @@ def register_callbacks(app):
         Output("market-overview-graph", "figure"), Input("market-overview-graph", "id")
     )
     def update_market_overview(dummy):
-        # Load main indices stock data
-        indices = load_main_indices_stock_data()
+        # Step 1: Load main indices stock data and handle empty or None response
+        max_retries = 3
+        retry_count = 0
+        indices = None
 
-        # Create an empty list to hold individual index DataFrames
+        while indices is None and retry_count < max_retries:
+            indices = load_main_indices_stock_data()
+            retry_count += 1
+            if indices is None or not indices:
+                time.sleep(
+                    1
+                )  # Wait for 1 second before retrying (to avoid rapid retry loops)
+
+        # If the data could not be loaded, return an error message
+        if indices is None or not indices:
+            return px.line(title="Failed to load stock data. Please try again later.")
+
+        # Step 2: Create an empty list to hold individual index DataFrames
         dataframes = []
 
-        # Loop through each index in the dictionary to prepare the data for plotting
+        # Step 3: Loop through each index in the dictionary to prepare the data for plotting
         for index_name, df in indices.items():
             # Check if DataFrame has the required data
             if not df.empty and "date" in df.columns and "close" in df.columns:
@@ -24,10 +39,14 @@ def register_callbacks(app):
                 df["Index"] = index_name
                 dataframes.append(df[["date", "close", "Index"]])
 
-        # Combine all index DataFrames into a single DataFrame
+        # Step 4: Check if the dataframes list is empty before combining
+        if not dataframes:
+            return px.line(title="No data available for the selected indices.")
+
+        # Step 5: Combine all index DataFrames into a single DataFrame
         combined_df = pd.concat(dataframes, ignore_index=True)
 
-        # Create a line chart for all indices using 'Index' to differentiate lines
+        # Step 6: Create a line chart for all indices using 'Index' to differentiate lines
         fig = px.line(
             combined_df,
             x="date",
