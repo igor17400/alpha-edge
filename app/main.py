@@ -25,12 +25,25 @@ def verify_api_credentials(token):
 
 
 # Initial layout with placeholders for IDs
+# Initial layout with placeholders for IDs
 app.layout = html.Div(
     [
-        dcc.Loading(
-            id="loading-screen",
-            type="default",
-            children=[html.Div(id="loading-output")],
+        html.Div(
+            dcc.Loading(
+                id="loading-screen",
+                type="default",
+                children=[html.Div(id="loading-output")],
+            ),
+            style={
+                "position": "absolute",
+                "top": "50%",
+                "left": "50%",
+                "transform": "translate(-50%, -50%)",
+                "display": "flex",
+                "justify-content": "center",
+                "align-items": "center",
+                "height": "100vh",
+            },
         ),
         # Placeholder Div for content (empty until API verification completes)
         html.Div(id="app-content"),
