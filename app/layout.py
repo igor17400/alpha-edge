@@ -2,6 +2,11 @@ from dash import html, dcc
 
 
 def create_layout():
+    """
+    Create the layout for the Dash app.
+    
+    :return: Dash layout.
+    """
     return html.Div(
         [
             html.H1("Brazilian Stock Market Analysis"),

@@ -9,7 +9,6 @@ from openbb import obb
 app = Dash(__name__)
 server = app.server  # Expose the Flask server
 
-
 # Function to check API credentials
 def verify_api_credentials(token):
     """Attempts to log in and verify if OpenBB API credentials are valid."""
@@ -24,7 +23,6 @@ def verify_api_credentials(token):
         return f"error: {str(e)}"
 
 
-# Initial layout with placeholders for IDs
 # Initial layout with placeholders for IDs
 app.layout = html.Div(
     [

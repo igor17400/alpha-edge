@@ -1,6 +1,18 @@
 import pandas as pd
 from openbb import obb
 
+def load_main_indices_stock_data():
+    # Load data for IBOVESPA and major US indices
+    symbols = ["^BVSP", "^GSPC", "^IXIC", "^DJI"]  # IBOVESPA, S&P 500, NASDAQ, Dow Jones
+    provider = "yfinance"
+    data = {}
+    
+    for symbol in symbols:
+        historical_data = obb.equity.price.historical(symbol=symbol, provider=provider)
+        data[symbol] = pd.DataFrame(historical_data).reset_index()
+
+    return data
+
 
 def load_stock_data(ticker, start_date, end_date, provider):
     """
