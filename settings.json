@@ -1,0 +1,15 @@
+{
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python.analysis": {
+          "diagnosticMode": "workspace",
+          "typeCheckingMode": "strict"
+        },
+        "python": {
+          "pythonPath": "/Users/igorlimarochaazevedo/miniforge3/envs/openbb/"
+        }
+      }
+    }
+  }
+}

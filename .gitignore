@@ -1,0 +1,74 @@
+# Ignore the environment configuration file
+.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment directories
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Local configurations
+*.local
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+*.temp
+*.out
+*.bak
+
+# Dash specific files
+*.db
+*.sqlite
+dash_cache/
+assets/.build/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# macOS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Add any additional project-specific directories or files here
