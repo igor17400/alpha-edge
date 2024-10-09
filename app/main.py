@@ -6,8 +6,9 @@ import config
 from openbb import obb
 
 # Create the Dash app
-app = Dash(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True)
 server = app.server  # Expose the Flask server
+
 
 # Function to check API credentials
 def verify_api_credentials(token):
@@ -121,4 +122,4 @@ def load_app_content(dummy):
 register_callbacks(app)
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)
