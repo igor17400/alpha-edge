@@ -48,12 +48,43 @@ body {
     /* Ensure padding is included in height calculation */
 }
 
-/* Header style */
 h1 {
     color: var(--color-fourth);
-    font-size: 3rem;
+    font-size: 2.5rem;
+    /* Reduced size for better hierarchy */
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    /* Smaller margin */
+    line-height: 1.2;
+    /* Improved line spacing */
+}
+
+/* Subtitle Style */
+h2 {
+    color: var(--color-third);
+    font-size: 2rem;
+    /* Slightly smaller than the title */
+    text-align: center;
+    margin-bottom: 10px;
+    /* Smaller margin */
+    font-weight: 600;
+    /* Semi-bold for emphasis */
+    line-height: 1.3;
+    /* Improved line spacing */
+}
+
+p {
+    color: var(--color-fourth);
+    font-size: 1.1rem;
+    /* Consistent with your current setup */
+    text-align: justify;
+    /* Justify text for a clean look */
+    max-width: 800px;
+    /* Increased max width for better readability */
+    margin: 20px auto;
+    /* Center with auto margins */
+    line-height: 1.6;
+    /* Increased line height for better readability */
 }
 
 /* Highlighted Stock Analyzer text */
@@ -61,16 +92,6 @@ h1 {
     color: var(--color-second);
     font-style: italic;
     font-family: 'Merriweather', serif;
-}
-
-
-/* Description text */
-p {
-    color: var(--color-fourth);
-    font-size: 1.2rem;
-    text-align: center;
-    max-width: 600px;
-    margin-bottom: 30px;
 }
 
 /* Buttons style */
@@ -180,25 +201,153 @@ p {
     right: 0;
     background-color: var(--color-first);
     color: var(--color-fourth);
-    /* Text color */
-    padding: 1rem;
-    /* Space around the footer */
+    padding: 1rem 2rem;
+    text-align: center;
     z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.footer-text, .footer-subtext {
-    margin: 0;
-    /* Remove default margins */
+.custom-divider {
+    width: 100%;
+    border: 0.5px solid var(--color-fourth);
+    margin-bottom: 2em;
+}
+
+/* Important Information Style */
+.important-info {
+    color: var(--color-second);
+    /* Use second color for emphasis */
+    font-weight: bold;
+    /* Bold text for important information */
+    font-size: 1.2rem;
+    /* Slightly larger than normal text */
+    background-color: rgba(255, 105, 105, 0.1);
+    /* Light background for emphasis */
+    padding: 10px;
+    /* Padding for spacing */
+    border-left: 4px solid var(--color-second);
+    /* Left border for emphasis */
+    margin: 20px auto;
+    /* Center with auto margins */
+    max-width: 800px;
+    /* Consistent max width */
+}
+
+/* General Container for Text Blocks */
+.text-block {
+    margin: 20px 0;
+    /* Vertical margin for separation */
+    padding: 15px;
+    /* Inner padding */
+    border-radius: 5px;
+    /* Slightly rounded corners */
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Slightly transparent background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+}
+
+/* Landing Page Container */
+.landing-container {
+    /* background-color: #141E46; */
+    display: flex;
+    /* Enable flexbox layout */
+    flex-direction: column;
+    /* Stack items vertically */
+    align-items: center;
+    /* Center items horizontally */
+    justify-content: center;
+    /* Center items vertically */
+    max-width: 1200px;
+    /* Max width for larger screens */
+    margin: 0 auto;
+    /* Center the container */
+    height: 80vh;
+    /* Make the container full height of the viewport */
+}
+
+/* Title Style */
+.landing-title {
+    font-size: 3.5rem;
+    /* Adjust size to be 'middle' */
+    color: var(--color-second);
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+/* Slogan Style */
+.landing-slogan {
+    font-size: 4.5rem;
+    /* Adjust size to be smaller than title */
     color: var(--color-fourth);
-    /* Ensure text is white for visibility */
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    /* Center the slogan text */
 }
 
-.footer-social img {
-    transition: transform 0.2s;
-    /* Optional: Add a hover effect */
+/* Vertical line after the slogan */
+.scroll-indicator {
+    height: 50px;
+    /* Height of the vertical line */
+    width: 2px;
+    /* Width of the vertical line */
+    background-color: var(--color-second);
+    /* Color of the line */
+    margin: 20px auto;
+    /* Center the line and add margin above and below */
+    /* Center the vertical line */
 }
 
-.footer-social img:hover {
-    transform: scale(1.1);
-    /* Optional: Slightly scale icons on hover */
+
+/* Graph Container */
+.graph-container {
+    max-width: 30%;
+    /* Occupy 30% of the container */
+    display: flex;
+    /* Use flex to align graph */
+    justify-content: center;
+    /* Center the graph horizontally */
+    align-items: center;
+    /* Center the graph vertically */
+}
+
+/* Custom styling for mobile screens */
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        /* Allow body height to adjust based on content */
+    }
+
+    .main-container {
+        padding: 20px;
+        /* Add padding for smaller screens */
+    }
+
+    h1 {
+        font-size: 2rem;
+        /* Adjust header size for mobile */
+    }
+
+    p {
+        font-size: 1rem;
+        /* Adjust paragraph size for mobile */
+    }
+
+    .icons {
+        padding: 5px;
+        /* Smaller padding for icons */
+        font-size: 0.9rem;
+        /* Smaller font size for mobile */
+    }
+
+    /* Footer adjustments for mobile */
+    .footer-custom {
+        padding: 1rem;
+        /* Adjust footer padding for mobile */
+        text-align: center;
+        /* Center align footer text */
+    }
 }

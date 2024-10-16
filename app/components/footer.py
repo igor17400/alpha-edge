@@ -36,7 +36,8 @@ footer = html.Footer(
                             ],
                             className="footer-content",
                         ),
-                        width=5,  # Takes about half the width
+                        width=12,  # Use full width on mobile
+                        md=5,  # Half width on medium and larger screens
                     ),
                     # Right side for icons
                     dbc.Col(
@@ -66,7 +67,8 @@ footer = html.Footer(
                                 "paddingRight": "15px",
                             },  # Align icons and add padding
                         ),
-                        width=5,  # Adjusted width to fit icons nicely
+                        width=12,  # Use full width on mobile
+                        md=5,  # Half width on medium and larger screens
                     ),
                 ],
                 className="justify-content-between",  # Distribute space between columns
