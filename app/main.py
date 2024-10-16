@@ -1,125 +1,55 @@
+import os
+import dash
 from dash import Dash, html, dcc
-from dash.dependencies import Input, Output
-from layout import create_layout
 from callbacks import register_callbacks
-import config
-from openbb import obb
+from flask import Flask
+import dash_bootstrap_components as dbc
 
-# Create the Dash app
-app = Dash(__name__, suppress_callback_exceptions=True)
-server = app.server  # Expose the Flask server
+from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK
+from components import navbar, footer
 
-
-# Function to check API credentials
-def verify_api_credentials(token):
-    """Attempts to log in and verify if OpenBB API credentials are valid."""
-    try:
-        obb.account.login(pat=token)
-        if obb.user.credentials:
-            obb.user.preferences.output_type = "dataframe"
-            return "success"
-        else:
-            return "fail"
-    except Exception as e:
-        return f"error: {str(e)}"
-
-
-# Initial layout with placeholders for IDs
-app.layout = html.Div(
-    [
-        html.Div(
-            dcc.Loading(
-                id="loading-screen",
-                type="default",
-                children=[html.Div(id="loading-output")],
-            ),
-            style={
-                "position": "absolute",
-                "top": "50%",
-                "left": "50%",
-                "transform": "translate(-50%, -50%)",
-                "display": "flex",
-                "justify-content": "center",
-                "align-items": "center",
-                "height": "100vh",
-            },
-        ),
-        # Placeholder Div for content (empty until API verification completes)
-        html.Div(id="app-content"),
-        # Placeholders for all the graph components used in callbacks
-        dcc.Graph(id="market-overview-graph", style={"display": "none"}),
-        dcc.Dropdown(id="stock-selector", style={"display": "none"}),
-        dcc.Graph(id="stock-comparison-graph", style={"display": "none"}),
+# Create Dash app
+server = Flask(__name__)
+app = dash.Dash(
+    __name__,
+    server=server,
+    use_pages=True,  # turn on Dash pages
+    external_stylesheets=[
+        dbc.themes.BOOTSTRAP,
+        dbc.icons.FONT_AWESOME,
+    ],  # fetch the proper css items we want
+    meta_tags=[
+        {  # check if device is a mobile device. This is a must if you do any mobile styling
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1",
+        }
     ],
-    style={"position": "relative", "height": "100vh"},
+    suppress_callback_exceptions=True,
+    title="AlphaEdge",
 )
 
-
-@app.callback(
-    [
-        Output("loading-output", "children"),
-        Output("app-content", "children"),
-        Output("market-overview-graph", "style"),
-        Output("stock-selector", "style"),
-        Output("stock-comparison-graph", "style"),
-    ],
-    Input("loading-screen", "children"),
-)
-def load_app_content(dummy):
-    api_status = verify_api_credentials(config.OPENBB_TOKEN)
-
-    if api_status == "success":
-        # Show the real layout when API is verified
-        return (
-            "",
-            create_layout(),
-            {"display": "block"},
-            {"display": "block"},
-            {"display": "block"},
-        )
-    elif api_status == "fail":
-        return (
-            "",
-            html.Div(
-                [
-                    html.H1("API Credentials Not Loaded", style={"color": "red"}),
-                    html.P(
-                        "Failed to load API credentials. Please check your API token and try again."
-                    ),
-                    html.P(
-                        "If the issue persists, ensure that the token is valid and correctly formatted."
-                    ),
-                ],
-                style={"textAlign": "center", "marginTop": "50px"},
-            ),
-            {"display": "none"},
-            {"display": "none"},
-            {"display": "none"},
-        )
-    else:
-        # If there was an error during login, show the error message
-        return (
-            "",
-            html.Div(
-                [
-                    html.H1("Error During API Login", style={"color": "red"}),
-                    html.P(
-                        f"An error occurred while attempting to log in: {api_status.split(': ')[1]}"
-                    ),
-                    html.P(
-                        "Please check your API credentials or contact support if the issue persists."
-                    ),
-                ],
-                style={"textAlign": "center", "marginTop": "50px"},
-            ),
-            {"display": "none"},
-            {"display": "none"},
-            {"display": "none"},
-        )
+server.config.update(SECRET_KEY=os.getenv("SECRET_KEY"))
 
 
-# Register callbacks
-register_callbacks(app)
+def serve_layout():
+    """Define the layout of the application"""
+    return html.Div(
+        [
+            navbar,
+            html.Hr(className="divider-line"),
+            dbc.Container(dash.page_container, class_name="my-2"),
+            footer,
+        ]
+    )
+
+
+app.layout = serve_layout  # set the layout to the serve_layout function
+server = app.server  # the server is needed to deploy the application
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8051)
+    app.run_server(
+        host=APP_HOST,
+        port=APP_PORT,
+        debug=APP_DEBUG,
+        dev_tools_props_check=DEV_TOOLS_PROPS_CHECK,
+    )

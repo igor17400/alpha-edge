@@ -1,0 +1,179 @@
+/* assets/style.css */
+
+/* Root colors */
+:root {
+    --color-first: #FFF5E0;
+    --color-second: #FF6969;
+    --color-third: #BB2525;
+    --color-fourth: #141E46;
+}
+
+/* Import a nice font for Stock Analyzer */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@1,700&display=swap');
+
+
+/* Apply background color */
+body {
+    background-color: var(--color-first);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+._dash-loading {
+    margin: auto;
+    color: transparent;
+    width: 0;
+    height: 0;
+    text-align: center;
+}
+
+/* Main container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Header style */
+h1 {
+    color: var(--color-fourth);
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Highlighted Stock Analyzer text */
+.highlighted-text {
+    color: var(--color-second);
+    font-style: italic;
+    font-family: 'Merriweather', serif;
+}
+
+
+/* Description text */
+p {
+    color: var(--color-fourth);
+    font-size: 1.2rem;
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 30px;
+}
+
+/* Buttons style */
+.icons {
+    color: white;
+    background-color: var(--color-second);
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.icons:hover {
+    background-color: var(--color-third);
+}
+
+/* RadioItems */
+.dcc-radioitems label {
+    font-size: 1.2rem;
+    color: var(--color-fourth);
+}
+
+#content {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    color: var(--color-third);
+    text-align: center;
+}
+
+/* Custom styling for the navbar */
+.navbar-custom {
+    background-color: var(--color-first) !important;
+    padding: 1rem 2rem;
+    margin-bottom: 1em;
+    color: var(--color-fourth) !important;
+}
+
+/* Custom navigation link styles */
+.nav-link-custom {
+    color: var(--color-fourth) !important;
+    /* Use the first color for nav links */
+    font-size: 1.1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transition: background-color 0.3s ease, font-style 0.3s ease;
+    /* Transition for background color and font style */
+    padding: 8px 12px;
+    /* Add padding for the link */
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+/* Specific styles for the logo link to prevent inheriting button styles */
+.logo-link {
+    background-color: transparent;
+    /* No background */
+    padding: 0;
+    /* Remove padding */
+    font-weight: normal;
+    /* Reset font weight */
+    color: inherit;
+    /* Inherit color from parent or define a specific color */
+}
+
+/* Optionally, you can define hover effects for the logo link */
+.logo-link:hover {
+    background-color: transparent;
+    /* Ensure hover does not apply any background */
+}
+
+
+/* Hover effect for nav links */
+.nav-link-custom:hover {
+    text-decoration: underline;
+    font-style: italic;
+    background-color: transparent;
+}
+
+
+/* Custom styles for the divider line */
+.divider-line {
+    border: none;
+    /* Remove default border */
+    height: 2px;
+    /* Thickness of the line */
+    background-color: var(--color-first);
+    /* Color of the line */
+    margin: 0;
+    /* Margin can be adjusted as needed */
+    margin-top: 1em;
+    /* Space above the line */
+    margin-bottom: 1em;
+    /* Space below the line */
+    visibility: hidden;
+}
+
+/* Custom styling for the footer */
+.footer-custom {
+    background-color: var(--color-first);
+    color: var(--color-fourth);  /* Text color */
+    padding: 1rem; /* Space around the footer */
+}
+
+.footer-text, .footer-subtext {
+    margin: 0; /* Remove default margins */
+    color: var(--color-fourth); /* Ensure text is white for visibility */
+}
+
+.footer-social img {
+    transition: transform 0.2s; /* Optional: Add a hover effect */
+}
+
+.footer-social img:hover {
+    transform: scale(1.1); /* Optional: Slightly scale icons on hover */
+}
