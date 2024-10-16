@@ -1,6 +1,7 @@
 /* assets/style.css */
 
 /* Root colors */
+/* Reference: https://colorhunt.co/palette/fff5e0ff6969bb2525141e46 */
 :root {
     --color-first: #FFF5E0;
     --color-second: #FF6969;
@@ -18,6 +19,10 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    /* Ensure body takes full height of viewport */
+    overflow-y: auto;
+    /* Allow the body to handle vertical scrolling */
 }
 
 ._dash-loading {
@@ -33,8 +38,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    /* Align content to the top */
+    padding-top: 60px;
+    /* Add top padding to account for the navbar height */
+    padding-bottom: 60px;
+    /* Add bottom padding to account for the footer height */
+    box-sizing: border-box;
+    /* Ensure padding is included in height calculation */
 }
 
 /* Header style */
@@ -93,10 +104,14 @@ p {
 
 /* Custom styling for the navbar */
 .navbar-custom {
+    top: 0;
+    left: 0;
+    right: 0;
     background-color: var(--color-first) !important;
     padding: 1rem 2rem;
     margin-bottom: 1em;
     color: var(--color-fourth) !important;
+    z-index: 1000;
 }
 
 /* Custom navigation link styles */
@@ -160,20 +175,30 @@ p {
 
 /* Custom styling for the footer */
 .footer-custom {
+    bottom: 0;
+    left: 0;
+    right: 0;
     background-color: var(--color-first);
-    color: var(--color-fourth);  /* Text color */
-    padding: 1rem; /* Space around the footer */
+    color: var(--color-fourth);
+    /* Text color */
+    padding: 1rem;
+    /* Space around the footer */
+    z-index: 1000;
 }
 
 .footer-text, .footer-subtext {
-    margin: 0; /* Remove default margins */
-    color: var(--color-fourth); /* Ensure text is white for visibility */
+    margin: 0;
+    /* Remove default margins */
+    color: var(--color-fourth);
+    /* Ensure text is white for visibility */
 }
 
 .footer-social img {
-    transition: transform 0.2s; /* Optional: Add a hover effect */
+    transition: transform 0.2s;
+    /* Optional: Add a hover effect */
 }
 
 .footer-social img:hover {
-    transform: scale(1.1); /* Optional: Slightly scale icons on hover */
+    transform: scale(1.1);
+    /* Optional: Slightly scale icons on hover */
 }

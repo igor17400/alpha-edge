@@ -1,5 +1,42 @@
 import plotly.graph_objs as go
 import plotly.subplots as sp
+import plotly.express as px
+
+
+def plot_heatmap_monthly_changes(monthly_changes):
+    """
+    Plot a heatmap of monthly changes using Plotly.
+
+    :param monthly_changes: DataFrame with monthly returns
+    """
+    # Reset index for heatmap plotting
+    heatmap_data = monthly_changes.reset_index()
+    heatmap_data = heatmap_data.dropna()
+
+    # Create heatmap using Plotly
+    fig = px.imshow(
+        heatmap_data.set_index("date").T,  # Transpose for proper orientation
+        labels=dict(x="Months", y="Companies", color="Monthly Return (%)"),
+        color_continuous_scale="Spectral",
+    )
+
+    # Update layout for transparency and color bar positioning
+    fig.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor= "rgba(0, 0, 0, 0)",
+        xaxis_title="Months",
+        yaxis_title="Companies",
+        coloraxis_colorbar=dict(
+            title="Return (%)",
+            orientation="h",  # Horizontal color bar
+            x=0.5,  # Center the color bar horizontally
+            y=1.1,  # Position above the graph
+            xanchor="center",
+            yanchor="bottom",
+        ),
+    )
+
+    return fig
 
 
 def create_comparison_figure(ibov_df, index_df, title):

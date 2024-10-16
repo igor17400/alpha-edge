@@ -1,11 +1,27 @@
-# package imports
 import dash
 from dash import html, dcc, callback, Input, Output
+import plotly.express as px
+from utils.data_loader import calculate_monthly_returns
+from utils.graphs import plot_heatmap_monthly_changes
+from utils.static_info import top_tickers
 
 dash.register_page(__name__, path="/", redirect_from=["/home"], title="Home")
 
+# Load the data
+
+monthly_changes = calculate_monthly_returns(top_tickers, provider="yfinance")
+
+# Create the heatmap
+fig = plot_heatmap_monthly_changes(monthly_changes)
+
 layout = html.Div(
     className="main-container",
+    # style={
+    #     "height": "100vh",  # Full height of the viewport
+    #     "overflowY": "scroll",  # Enable vertical scrolling
+    #     "padding": "20px",  # Optional: add padding
+    #     "boxSizing": "border-box",  # Ensure padding is included in height
+    # },
     children=[
         html.H1(
             [
@@ -13,27 +29,12 @@ layout = html.Div(
                 html.Span("AlphaEdge", className="highlighted-text"),
             ]
         ),
-        html.P(
-            "Empowering you with data-driven market insights."
-        ),
+        html.P("Empowering you with data-driven market insights."),
+        dcc.Graph(figure=fig),  # Add the heatmap to the layout
+        # You can add more content here to ensure scrolling works
         html.Div(
-            [
-                html.A(
-                    "Explore Stock Comparisons",
-                    href="/complex",
-                    style={"margin-right": "10px"},
-                ),
-                html.A("Visit Page 2", href="/page2"),
-            ],
-            style={"margin-bottom": "40px"},
-        ),
-        dcc.RadioItems(
-            id="radios",
-            options=[{"label": i, "value": i} for i in ["Orange", "Blue", "Red"]],
-            value="Orange",
-            style={"margin-bottom": "20px"},
-        ),
-        html.Div(id="content"),
+            "Additional content goes here...", style={"height": "1500px"}
+        ),  # Example content for scrolling
     ],
 )
 

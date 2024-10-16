@@ -1,7 +1,6 @@
 import os
 import dash
 from dash import Dash, html, dcc
-from callbacks import register_callbacks
 from flask import Flask
 import dash_bootstrap_components as dbc
 
@@ -36,7 +35,6 @@ def serve_layout():
     return html.Div(
         [
             navbar,
-            html.Hr(className="divider-line"),
             dbc.Container(dash.page_container, class_name="my-2"),
             footer,
         ]

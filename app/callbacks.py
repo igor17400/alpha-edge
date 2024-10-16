@@ -7,9 +7,7 @@ import config
 import time
 
 from layout import create_layout
-from utils.data_loader import load_main_indices_stock_data
 from utils.apis import verify_api_credentials
-from utils.graphs import create_comparison_figure
 
 
 def register_callbacks(app):

@@ -14,7 +14,7 @@ footer = html.Footer(
                         html.Div(
                             [
                                 html.P(
-                                    "© 2024 Stock Analyzer. All rights reserved.",
+                                    "© 2024 Alpha Edge. All rights reserved.",
                                     className="footer-text",
                                 ),
                                 html.P(
