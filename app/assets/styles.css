@@ -35,6 +35,7 @@ body {
 
 /* Main container */
 .main-container {
+    /* background-color: aqua; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -110,18 +111,6 @@ p {
     background-color: var(--color-third);
 }
 
-/* RadioItems */
-.dcc-radioitems label {
-    font-size: 1.2rem;
-    color: var(--color-fourth);
-}
-
-#content {
-    margin-top: 20px;
-    font-size: 1.3rem;
-    color: var(--color-third);
-    text-align: center;
-}
 
 /* Custom styling for the navbar */
 .navbar-custom {
@@ -235,23 +224,9 @@ p {
     /* Consistent max width */
 }
 
-/* General Container for Text Blocks */
-.text-block {
-    margin: 20px 0;
-    /* Vertical margin for separation */
-    padding: 15px;
-    /* Inner padding */
-    border-radius: 5px;
-    /* Slightly rounded corners */
-    background-color: rgba(255, 255, 255, 0.8);
-    /* Slightly transparent background */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* Subtle shadow for depth */
-}
-
 /* Landing Page Container */
 .landing-container {
-    /* background-color: #141E46; */
+    /* background-color:  rgba(255, 105, 255, 0.1); */
     display: flex;
     /* Enable flexbox layout */
     flex-direction: column;
@@ -274,6 +249,7 @@ p {
     /* Adjust size to be 'middle' */
     color: var(--color-second);
     text-align: center;
+    margin-top: 0px;
     margin-bottom: 0px;
 }
 
@@ -311,6 +287,40 @@ p {
     /* Center the graph horizontally */
     align-items: center;
     /* Center the graph vertically */
+}
+
+.title-line {
+    font-size: 4rem;
+    line-height: 1.2em;
+    color: var(--color-second);
+}
+
+
+.diagonal-background {
+    position: relative;
+    width: 550px;
+    height: 75px;
+    /* Adjust height as needed */
+    border: 2px solid var(--color-third);
+    transform: skew(-50deg);
+    /* Create diagonal effect */
+    z-index: 1;
+    /* This puts the diagonal below the text */
+    margin-top: -85px;
+    /* Adjust to move closer to the text */
+    margin-bottom: 2.5em;
+}
+
+.aligned-list {
+    margin-left: 40px;
+    /* Aligns with the paragraph */
+    list-style-type: disc;
+    /* Optional: Change bullet style */
+}
+
+.aligned-list li {
+    margin-bottom: 5px;
+    /* Space between each list item */
 }
 
 /* Custom styling for mobile screens */

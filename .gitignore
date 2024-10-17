@@ -72,3 +72,4 @@ ehthumbs.db
 Desktop.ini
 
 # Add any additional project-specific directories or files here
+/test_app
