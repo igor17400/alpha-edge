@@ -1,6 +1,8 @@
 import plotly.graph_objs as go
 import plotly.subplots as sp
 import plotly.express as px
+import pandas as pd
+import numpy as np
 
 
 def plot_heatmap_monthly_changes(monthly_changes):
@@ -23,7 +25,7 @@ def plot_heatmap_monthly_changes(monthly_changes):
     # Update layout for transparency and color bar positioning
     fig.update_layout(
         plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor= "rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
         xaxis_title="Months",
         yaxis_title="Companies",
         coloraxis_colorbar=dict(
@@ -129,5 +131,142 @@ def create_comparison_figure(ibov_df, index_df, title):
         yaxis=dict(showgrid=True, gridcolor="lightgrey", zerolinecolor="lightgrey"),
         legend=dict(bgcolor="white", bordercolor="lightgrey"),
     )
+
+    return fig
+
+
+def gdp_per_state():
+    # List of US state codes (ISO 3166-2:US)
+    states = [
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+    ]
+
+    # Generate random GDP data for 10 years (2010-2020) for each state
+    years = np.arange(2010, 2020)
+    gdp_data = {
+        "State": np.repeat(states, len(years)),  # Repeat each state for each year
+        "Year": np.tile(years, len(states)),  # Repeat the years for each state
+        "GDP": np.random.randint(
+            500, 4000, size=len(states) * len(years)
+        ),  # Random GDP values in billions
+    }
+
+    # Convert to DataFrame
+    data = pd.DataFrame(gdp_data)
+
+    # Create the animated choropleth map
+    fig = px.choropleth(
+        data_frame=data,
+        locations="State",  # State codes
+        locationmode="USA-states",  # Mode for state-level mapping
+        color="GDP",  # The data to color the states by (GDP in this case)
+        animation_frame="Year",  # Animate over the 'Year' column
+        color_continuous_scale="Blues",  # Color scale for GDP
+        range_color=(
+            data["GDP"].min(),
+            data["GDP"].max(),
+        ),  # Range of colors based on GDP values
+        scope="usa",  # Focus on USA
+        labels={"GDP": "GDP in Billions USD"},  # Label for the color legend
+    )
+
+    # Prepare frames for animation
+    frames = []
+    for year in years:
+        frame_data = data[data["Year"] == year]
+        frames.append(
+            go.Frame(
+                data=[
+                    go.Choropleth(
+                        locations=frame_data["State"],
+                        z=frame_data["GDP"],
+                        locationmode="USA-states",
+                        colorscale="Blues",
+                        showscale=False,  # Hide color scale in each frame
+                    )
+                ],
+                layout=go.Layout(
+                    title_text=f"GDP in {year}",  # Update title for the frame
+                ),
+            )
+        )
+
+    # Add the frames to the figure
+    fig.frames = frames
+
+    # Set the animation to autoplay and loop automatically without buttons or sliders
+    fig["layout"].pop("updatemenus")
+    fig["layout"]["sliders"] = []  # Remove the slider
+
+    # Update layout to remove title, buttons, sliders, and set transparent background
+    fig.update_layout(
+        title_text="USA GDP in 2010",  # Set the initial title
+        geo=dict(
+            scope="usa",
+            projection=go.layout.geo.Projection(
+                type="albers usa"
+            ),  # Albers USA projection
+            showlakes=False,  # Hide lakes
+            bgcolor="rgba(0,0,0,0)",  # Transparent map background
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",  # Transparent overall background
+        plot_bgcolor="rgba(0,0,0,0)",  # Transparent plot background
+        coloraxis_colorbar=dict(
+            ticks="outside",  # Put ticks outside for better visualization
+            ticklen=5,
+            tickwidth=2,
+        ),
+    )
+    # Disable interactivity
+    fig.update_layout(dragmode=False)
 
     return fig

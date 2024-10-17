@@ -2,7 +2,7 @@ import dash
 from dash import html, dcc, callback, Input, Output
 import plotly.express as px
 from utils.data_loader import calculate_monthly_returns
-from utils.graphs import plot_heatmap_monthly_changes
+from utils.graphs import gdp_per_state, plot_heatmap_monthly_changes
 from utils.static_info import top_tickers
 
 dash.register_page(__name__, path="/", redirect_from=["/home"], title="Home")
@@ -12,6 +12,9 @@ monthly_changes = calculate_monthly_returns(top_tickers, provider="yfinance")
 
 # Create the heatmap
 fig = plot_heatmap_monthly_changes(monthly_changes)
+
+# Create state maps
+map_fig = gdp_per_state()
 
 layout = html.Div(
     className="main-container",
@@ -41,8 +44,18 @@ layout = html.Div(
                     "allowing for quick identification of high and low performers.",
                     className="text-block",  # Apply the text block class
                 ),
-                # Heatmap graph
+                # --- Heatmap graph
                 dcc.Graph(figure=fig),  # Add the heatmap to the layout
+                # --- Map graph
+                dcc.Graph(
+                    figure=gdp_per_state(),
+                    id="gdp-choropleth",
+                    config={"displayModeBar": False},
+                ),  # GDP map
+                # Interval component to trigger animation
+                dcc.Interval(
+                    id="interval-component", interval=2000, n_intervals=0
+                ),  # Adjust the interval as needed
                 html.H3("Understanding Percentage of Return"),
                 html.P(
                     "The percentage of return is a key financial metric that indicates the change in value of an investment over a specified period. "
@@ -119,6 +132,14 @@ layout = html.Div(
 )
 
 
-@callback(Output("content", "children"), Input("radios", "value"))
-def home_radios(value):
-    return f"You have selected {value}"
+# Callback to trigger the animation
+@callback(
+    Output("gdp-choropleth", "figure"), [Input("interval-component", "n_intervals")]
+)
+def update_gdp_map(n):
+    # Calculate the year based on n_intervals
+    year = 2010 + (n % 10)  # Loop through 2010-2019
+    # Create the GDP figure
+    fig = gdp_per_state()  # Get the initial figure
+    fig.update_layout(title_text=f"USA GDP in {year}")  # Update the title
+    return fig
