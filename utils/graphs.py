@@ -4,6 +4,7 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 import networkx as nx
+from pyvis.network import Network
 
 
 def plot_heatmap_monthly_changes(monthly_changes):
@@ -154,127 +155,38 @@ def create_comparison_figure(ibov_df, index_df, title):
     return fig
 
 
-def gdp_per_state():
-    # List of US state codes (ISO 3166-2:US)
-    states = [
-        "AL",
-        "AK",
-        "AZ",
-        "AR",
-        "CA",
-        "CO",
-        "CT",
-        "DE",
-        "FL",
-        "GA",
-        "HI",
-        "ID",
-        "IL",
-        "IN",
-        "IA",
-        "KS",
-        "KY",
-        "LA",
-        "ME",
-        "MD",
-        "MA",
-        "MI",
-        "MN",
-        "MS",
-        "MO",
-        "MT",
-        "NE",
-        "NV",
-        "NH",
-        "NJ",
-        "NM",
-        "NY",
-        "NC",
-        "ND",
-        "OH",
-        "OK",
-        "OR",
-        "PA",
-        "RI",
-        "SC",
-        "SD",
-        "TN",
-        "TX",
-        "UT",
-        "VT",
-        "VA",
-        "WA",
-        "WV",
-        "WI",
-        "WY",
-    ]
+def gdp_per_state(df, year):
+    min_gdp = df["GDP"].min()
+    max_gdp = df["GDP"].max()
+    df = df[df["Year"] == str(year)]
 
-    # Generate random GDP data
-    years = np.arange(2000, 2024)
-    gdp_data = {
-        "State": np.repeat(states, len(years)),  # Repeat each state for each year
-        "Year": np.tile(years, len(states)),  # Repeat the years for each state
-        "GDP": np.random.randint(
-            500, 4000, size=len(states) * len(years)
-        ),  # Random GDP values in billions
-    }
+    # Check if the filtered DataFrame is empty
+    if df.empty:
+        print(f"No data available for the year {year}.")
+        return
 
-    # Convert to DataFrame
-    data = pd.DataFrame(gdp_data)
-
-    # Create the animated choropleth map
-    fig = px.choropleth(
-        data_frame=data,
-        locations="State",  # State codes
-        locationmode="USA-states",  # Mode for state-level mapping
-        color="GDP",  # The data to color the states by (GDP in this case)
-        animation_frame="Year",  # Animate over the 'Year' column
-        color_continuous_scale="Blues",  # Color scale for GDP
-        range_color=(
-            data["GDP"].min(),
-            data["GDP"].max(),
-        ),  # Range of colors based on GDP values
-        scope="usa",  # Focus on USA
-        labels={"GDP": "GDP in Billions USD"},  # Label for the color legend
+    # Create the choropleth map using go.Figure
+    fig = go.Figure(
+        data=go.Choropleth(
+            locations=df["State"],  # Spatial coordinates (state codes)
+            z=df["GDP"],  # Data to be color-coded
+            zmin=min_gdp,  # Minimum value for color scale
+            zmax=max_gdp,  # Maximum value for color scale
+            locationmode="USA-states",  # Set of locations match entries in `locations`
+            colorscale="Blues",  # Color scale for GDP
+            colorbar_title="GDP in Billions USD",  # Title for the color bar
+        )
     )
 
-    # Prepare frames for animation
-    frames = []
-    for year in years:
-        frame_data = data[data["Year"] == year]
-        frames.append(
-            go.Frame(
-                data=[
-                    go.Choropleth(
-                        locations=frame_data["State"],
-                        z=frame_data["GDP"],
-                        locationmode="USA-states",
-                        colorscale="Blues",
-                        showscale=False,  # Hide color scale in each frame
-                    )
-                ],
-                layout=go.Layout(
-                    title_text=f"GDP in {year}",  # Update title for the frame
-                ),
-            )
-        )
-
-    # Add the frames to the figure
-    fig.frames = frames
-
-    # Set the animation to autoplay and loop automatically without buttons or sliders
-    fig["layout"].pop("updatemenus")
-    fig["layout"]["sliders"] = []  # Remove the slider
-
-    # Update layout to remove title, buttons, sliders, and set transparent background
+    # Update layout for the figure
     fig.update_layout(
-        title_text="USA GDP in 2000",  # Set the initial title
+        title_text=f"GDP by State ({year})",  # Set the initial title
         geo=dict(
-            scope="usa",
+            scope="usa",  # Limit map scope to USA
             projection=go.layout.geo.Projection(
                 type="albers usa"
             ),  # Albers USA projection
-            showlakes=False,  # Hide lakes
+            showlakes=False,  # Show lakes
             bgcolor="rgba(0,0,0,0)",  # Transparent map background
         ),
         paper_bgcolor="rgba(0,0,0,0)",  # Transparent overall background
@@ -285,9 +197,11 @@ def gdp_per_state():
             tickwidth=2,
         ),
     )
-    # Disable interactivity
+
+    # Disable interactivity# Disable interactivity
     fig.update_layout(dragmode=False)
 
+    # Show the figure
     return fig
 
 
@@ -334,7 +248,7 @@ def plot_top_growing_companies():
 
     # Update layout for the map
     fig.update_layout(
-        title_text="Number of Companies per State in 2022",
+        title_text="US Population Statistics for 2014",
         showlegend=True,
         legend=dict(
             orientation="h",  # Horizontal legend
@@ -500,106 +414,51 @@ def num_tech_companies():
     return fig
 
 
-def graphs_m_and_a():
-    # Let's import the ZKC graph
-    ZKC_graph = nx.karate_club_graph()
+def create_pyvis_network_graph(G, selected_company):
+    # Create a color map for industries globally
+    unique_industries = set(nx.get_node_attributes(G, "Industry").values())
+    color_scale = px.colors.qualitative.Plotly
+    industry_color_map = {
+        industry: color_scale[i % len(color_scale)]
+        for i, industry in enumerate(unique_industries)
+    }
 
-    # Define constants for the nodes
-    Apple = 0
-    Microsoft = 33
-    Num_nodes = 34
+    # Create a Pyvis Network object
+    net = Network(height="600px", width="800px", notebook=True)
 
-    # Get the club labels
-    club_labels = list(nx.get_node_attributes(ZKC_graph, "club").values())
+    # Get the subgraph for the selected company or use the full graph
+    if selected_company == "All Companies":
+        subgraph = G
+    elif selected_company in G:
+        subgraph = nx.ego_graph(G, selected_company, radius=1, undirected=True)
+    else:
+        subgraph = G  # Fallback to full graph if selection is invalid
 
-    # Define communities
-    community_0 = [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
-    community_1 = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 16, 17, 19, 21]
+    # Add nodes and edges to the Pyvis network
+    for node in subgraph.nodes():
+        industry = G.nodes[node]["Industry"]
+        net.add_node(
+            node,
+            label=node,
+            title=f"Industry: {industry}",
+            color=industry_color_map[industry],
+        )
 
-    # Label for each node corresponds to community 0 or community 1
-    community_label = (
-        [2] * 12 + [1] * 18 + [0] * 16
-    )  # 18 nodes in community 1, 16 in community 0
+    for edge in subgraph.edges():
+        net.add_edge(edge[0], edge[1])
 
-    # Spring layout for 3D
-    spring_3D = nx.spring_layout(ZKC_graph, dim=3, seed=18)
+    # Generate the HTML for the Pyvis graph
+    html = net.generate_html()
 
-    # Extract coordinates for nodes
-    x_nodes = [spring_3D[i][0] for i in range(Num_nodes)]
-    y_nodes = [spring_3D[i][1] for i in range(Num_nodes)]
-    z_nodes = [spring_3D[i][2] for i in range(Num_nodes)]
-
-    # Create a list of edges for the plot
-    edge_list = ZKC_graph.edges()
-    x_edges = []
-    y_edges = []
-    z_edges = []
-
-    # Fill edge coordinates
-    for edge in edge_list:
-        x_coords = [spring_3D[edge[0]][0], spring_3D[edge[1]][0], None]
-        x_edges += x_coords
-
-        y_coords = [spring_3D[edge[0]][1], spring_3D[edge[1]][1], None]
-        y_edges += y_coords
-
-        z_coords = [spring_3D[edge[0]][2], spring_3D[edge[1]][2], None]
-        z_edges += z_coords
-
-    # Create traces for edges and nodes
-    trace_edges = go.Scatter3d(
-        x=x_edges,
-        y=y_edges,
-        z=z_edges,
-        mode="lines",
-        line=dict(color="black", width=2),
-        hoverinfo="none",
-    )
-
-    trace_nodes = go.Scatter3d(
-        x=x_nodes,
-        y=y_nodes,
-        z=z_nodes,
-        mode="markers",
-        marker=dict(
-            symbol="circle",
-            size=10,
-            color=community_label,
-            colorscale=["lightgreen", "magenta", "red"],
-            line=dict(color="black", width=0.5),
-        ),
-        text=[
-            f"Node {i}: {club_labels[i]}" for i in range(Num_nodes)
-        ],  # Tooltip with node info
-        hoverinfo="text",
-    )
-
-    # we need to set the axis for the plot
-    axis = dict(
-        showbackground=False,
-        showline=False,
-        zeroline=False,
-        showgrid=False,
-        showticklabels=False,
-        title="",
-    )
-
-    # Create the layout for the figure
-    fig = go.Figure(data=[trace_edges, trace_nodes])
-    fig.update_layout(
-        title="Mergers and Acquisitions",
-        paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent background
-        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent plot area
-        showlegend=False,
-        width=650,
-        height=625,
-        scene=dict(
-            xaxis=dict(axis),
-            yaxis=dict(axis),
-            zaxis=dict(axis),
-        ),
-        margin=dict(t=100),
-        hovermode="closest",
-    )
-
-    return fig
+    # Add custom CSS for transparent background and centering
+    custom_style = """
+    <style>
+        #mynetwork {
+            background-color: rgba(255, 255, 255, 0); /* Transparent background */
+            margin: auto; /* Center the graph */
+            display: block; /* Make it a block element */
+        }
+    </style>
+    """
+    
+    return custom_style + html

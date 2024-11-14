@@ -34,8 +34,8 @@ navbar = dbc.Navbar(
                         ),
                         dbc.NavItem(
                             dbc.NavLink(
-                                "Stock Analysis",
-                                href="/stock-analysis",
+                                "Company Analysis",
+                                href="/company-analysis",
                                 className="nav-link-custom",
                             )
                         ),
@@ -43,13 +43,6 @@ navbar = dbc.Navbar(
                             dbc.NavLink(
                                 "Market Analysis",
                                 href="/market-analysis",
-                                className="nav-link-custom",
-                            )
-                        ),
-                        dbc.NavItem(
-                            dbc.NavLink(
-                                "Report",
-                                href="/report",
                                 className="nav-link-custom",
                             )
                         ),

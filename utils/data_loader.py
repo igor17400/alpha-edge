@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from openbb import obb
 import datetime
@@ -54,3 +55,15 @@ def calculate_monthly_returns(tickers, provider):
     combined_df = pd.DataFrame(data_store)
 
     return combined_df
+
+
+def load_state_gdp():
+    df = pd.read_csv("./datasets/combined_summary_2000_2023.csv")
+    melted_data = df.melt(
+        id_vars=["GeoFIPS", "State", "GeoName", "Unit"],
+        value_vars=[str(year) for year in range(2000, 2024)],
+        var_name="Year",
+        value_name="GDP",
+    )
+
+    return melted_data

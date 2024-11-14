@@ -1,21 +1,37 @@
 import dash
 from dash import html, dcc, callback, Input, Output
 import plotly.express as px
-from utils.data_loader import calculate_monthly_returns
+from utils.data_loader import calculate_monthly_returns, load_state_gdp
 from utils.graphs import (
     gdp_per_state,
-    graphs_m_and_a,
+    create_pyvis_network_graph,
     plot_heatmap_monthly_changes,
     plot_top_growing_companies,
     num_tech_companies,
 )
+import pickle
+import networkx as nx
 from utils.static_info import top_tickers
+import pandas as pd
+import plotly.graph_objects as go
 
 dash.register_page(__name__, path="/", redirect_from=["/home"], title="Home")
 
 # Load the data
 monthly_changes = calculate_monthly_returns(top_tickers, provider="yfinance")
+state_gdp = load_state_gdp()
 
+# Load the graph from a file
+with open("./graph_objs/company_graph.pkl", "rb") as f:
+    G = pickle.load(f)
+
+# Create a color map for industries globally
+unique_industries = set(nx.get_node_attributes(G, "Industry").values())
+color_scale = px.colors.qualitative.Plotly
+industry_color_map = {
+    industry: color_scale[i % len(color_scale)]
+    for i, industry in enumerate(unique_industries)
+}
 
 layout = html.Div(
     className="main-container",
@@ -67,14 +83,16 @@ layout = html.Div(
                 ),
                 # --- Map graph
                 dcc.Graph(
-                    figure=gdp_per_state(),
+                    figure=gdp_per_state(state_gdp, 2000),
                     id="gdp-choropleth",
-                    config={"displayModeBar": False},
                 ),  # GDP map
                 # Interval component to trigger animation
+                # Interval component to trigger updates
                 dcc.Interval(
-                    id="interval-component", interval=2024, n_intervals=0
-                ),  # Adjust the interval as needed
+                    id="interval-component",
+                    interval=1000,  # Update every second (1000 milliseconds)
+                    n_intervals=0,  # Start at 0
+                ),
                 html.H3("Understanding Percentage of Return"),
                 html.P(
                     "The percentage of return is a key financial metric that indicates the change in value of an investment over a specified period. "
@@ -111,22 +129,25 @@ layout = html.Div(
                 dcc.Graph(
                     figure=plot_heatmap_monthly_changes(monthly_changes)
                 ),  # Add the heatmap to the layout
-                html.H3("Importance of Analyzing the Number of Companies per State"),
+                html.H3(
+                    "Importance of Analyzing Population Statistics in Each City and State"
+                ),
                 html.P(
                     [
-                        "Analyzing the number of companies per state is essential for understanding the overall business landscape and economic vitality of each region. A higher number of companies typically indicates a more ",
-                        html.Span("vibrant economy", className="highlighted-text"),
-                        ", suggesting greater ",
-                        html.Span("competition", className="highlighted-text"),
-                        ", innovation, and job creation. This information can help businesses identify potential markets for expansion and assess the level of competition they may face.",
+                        "Analyzing population statistics in each city and state is crucial for understanding the drivers of economic growth and regional development. A larger population often signals a higher demand for goods, services, and housing, contributing to a more ",
+                        html.Span("dynamic economy", className="highlighted-text"),
+                        ". This, in turn, encourages greater ",
+                        html.Span("business investment", className="highlighted-text"),
+                        ", job creation, and infrastructure development, fueling innovation and expanding the local market.",
                         html.Br(),
                         html.Br(),
-                        "Additionally, knowing the distribution of companies across states allows for better strategic planning, resource allocation, and investment decisions. Regions with a high concentration of businesses may offer opportunities for partnerships, collaboration, and access to a skilled workforce. In contrast, states with fewer companies might present untapped markets where businesses can establish themselves with less competition.",
+                        "Population data also enables businesses and governments to make informed decisions regarding resource allocation, public services, and urban planning. Regions experiencing population growth may require increased investment in education, healthcare, and transportation, while areas with declining populations may face economic stagnation or require targeted revitalization efforts.",
                         html.Br(),
                         html.Br(),
-                        "Furthermore, understanding the types of ",
-                        html.Span("industries", className="highlighted-text"),
-                        " prevalent in each state can provide valuable insights into consumer preferences and trends, enabling companies to tailor their products or services accordingly. Overall, analyzing the number of companies per state is a critical component of market analysis that helps businesses navigate and thrive in diverse economic environments.",
+                        "Moreover, understanding the demographic makeup—such as age, income levels, and education—of different regions provides insights into consumer preferences, workforce skills, and economic potential. Businesses can leverage this data to tailor their products and services to meet local demand, while policymakers can use it to promote sustainable development and address regional disparities.",
+                        html.Br(),
+                        html.Br(),
+                        "In summary, analyzing population statistics plays a fundamental role in shaping economic strategies, fostering growth, and ensuring that cities and states are equipped to meet the challenges and opportunities presented by changing demographic trends.",
                     ]
                 ),
                 dcc.Graph(
@@ -165,7 +186,7 @@ layout = html.Div(
                         ". Over the past two decades, major tech companies have aggressively expanded their portfolios by acquiring smaller firms, leading to significant shifts in competitive landscapes.",
                         html.Br(),
                         html.Br(),
-                        "For instance, acquisitions such as Microsoft's purchase of OpenAI illustrate how larger companies can enhance their capabilities and diversify their offerings. These acquisitions are not merely transactions; they signify ",
+                        "For instance, acquisitions such as Adobe's purchase of Figma illustrate how larger companies can enhance their capabilities and diversify their offerings. These acquisitions are not merely transactions; they signify ",
                         html.Span("strategic decisions", className="highlighted-text"),
                         " that reshape industries and influence technological advancement. By examining these relationships, we can identify patterns that reveal how established companies leverage their resources to fuel growth and ",
                         html.Span("innovation", className="highlighted-text"),
@@ -185,7 +206,41 @@ layout = html.Div(
                         "Ultimately, a comprehensive understanding of tech company acquisitions and their implications is essential for navigating the competitive landscape. As the technology sector continues to evolve, staying informed about these changes will empower organizations to capitalize on emerging opportunities and mitigate potential risks.",
                     ]
                 ),
-                dcc.Graph(figure=graphs_m_and_a()),
+                html.Div(
+                    [
+                        html.Div(
+                            style={
+                                "display": "flex",
+                                "justify-content": "center",
+                                "margin-top": "20px",
+                                "margin-bottom": "20px",
+                            },
+                            children=[
+                                dcc.Dropdown(
+                                    id="company-dropdown",
+                                    options=[
+                                        {
+                                            "label": "All Companies",
+                                            "value": "All Companies",
+                                        }
+                                    ]
+                                    + [
+                                        {"label": node, "value": node}
+                                        for node in G.nodes()
+                                    ],
+                                    value="All Companies",
+                                    style={
+                                        "width": "50%",
+                                    },
+                                ),
+                            ],
+                        ),
+                        html.Div(
+                            id="company-graph-iframe"
+                        ),  # Placeholder for the Pyvis graph
+                    ]
+                ),
+                html.Br(),
                 html.H3("Conclusion"),
                 html.P(
                     [
@@ -228,8 +283,30 @@ layout = html.Div(
 )
 def update_gdp_map(n):
     # Calculate the year based on n_intervals
-    year = 2000 + (n % 10)  # Loop through 2000-2024
+    year = 2000 + (n % 24)  # Loop through 2000-2024
     # Create the GDP figure
-    fig = gdp_per_state()  # Get the initial figure
+    fig = gdp_per_state(state_gdp, year)  # Get the initial figure
     fig.update_layout(title_text=f"USA GDP in {year}")  # Update the title
     return fig
+
+
+@callback(
+    Output("company-graph-iframe", "children"),
+    Input("company-dropdown", "value"),
+)
+def update_graphs_and_info(selected_company):
+    graph_html = create_pyvis_network_graph(G, selected_company)  # Create Pyvis graph
+    graph_iframe = html.Iframe(
+        id="company-graph-iframe",  # Ensure this is the correct ID
+        srcDoc=graph_html,  # Your graph data
+        height="600px",
+        width="800px",
+        style={
+            "border": "none",  # Remove border
+            "backgroundColor": "rgba(255, 255, 255, 0)",  # Transparent background
+            "display": "block",  # Make it a block element
+            "margin": "auto",  # Center the iframe
+        },
+    )
+
+    return (graph_iframe,)  # Return the iframe with the Pyvis graph

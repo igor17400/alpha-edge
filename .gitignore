@@ -73,3 +73,9 @@ Desktop.ini
 
 # Add any additional project-specific directories or files here
 /test_app
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production

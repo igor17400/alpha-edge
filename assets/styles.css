@@ -90,9 +90,7 @@ p {
 
 /* Highlighted Stock Analyzer text */
 .highlighted-text {
-    color: var(--color-second);
-    font-style: italic;
-    font-family: 'Merriweather', serif;
+    background-color: rgba(255, 105, 105, 0.5);
 }
 
 /* Buttons style */
@@ -321,6 +319,57 @@ p {
 .aligned-list li {
     margin-bottom: 5px;
     /* Space between each list item */
+}
+
+/* Card Styles */
+.company-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0; /* Add some margin around the card container */
+}
+
+.company-cards .card {
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+    border: none; /* Remove default border */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.company-cards .card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+}
+
+.company-cards .card-body {
+    padding: 20px; /* Add padding inside the card */
+}
+
+.company-cards .card-title {
+    font-size: 1.5rem; /* Increase font size for the title */
+    color: var(--color-fourth); /* Use the fourth color for the title */
+    margin-bottom: 10px; /* Space below the title */
+}
+
+.company-cards .card-text {
+    font-size: 1.1rem; /* Consistent font size for text */
+    color: var(--color-third); /* Use the third color for text */
+    margin-bottom: 15px; /* Space below the text */
+}
+
+/* Button Styles */
+.company-cards .btn {
+    background-color: var(--color-second); /* Use the second color for buttons */
+    color: white; /* White text for buttons */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Padding for buttons */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
+}
+
+.company-cards .btn:hover {
+    background-color: var(--color-third); /* Change background on hover */
+    transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
 /* Custom styling for mobile screens */
